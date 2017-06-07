@@ -4,7 +4,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import java.io.IOException;
@@ -17,6 +16,9 @@ import java.util.GregorianCalendar;
 public class MakePDF {
 
     static public void main(String[] args) {
+
+
+
         try {
             doCreate();
         } catch (IOException e) {
@@ -45,7 +47,18 @@ public class MakePDF {
 //        document.removePage(noOfPages);
 
 
-        doWritePage(document, page);
+        String[][] str = {{"a","b", "1"},
+                {"c","d", "2"},
+                {"e","f", "3"},
+                {"g","h", "4"},
+                {"i","j", "5"}} ;
+
+        PDPageContentStream content = new PDPageContentStream(document, page);
+        drawTable(page, content, 700, 100, str);
+//        doWritePage(document, page);
+
+        // must close stream before save file
+        content.close();
 
         // save the pdf
         try {
@@ -53,6 +66,8 @@ public class MakePDF {
         } catch (IOException e) {
             System.out.println("save failed");
         }
+
+
 
         // close the document
         try {
@@ -102,7 +117,7 @@ public class MakePDF {
         contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
 
         //Setting the position for the line
-        contentStream.newLineAtOffset(25, 500);
+        contentStream.newLineAtOffset(610, 700);
 
         String text = "This is the sample document and we are adding content to it.";
 
@@ -116,5 +131,57 @@ public class MakePDF {
 
         //Closing the content stream
         contentStream.close();
+    }
+
+    /**
+     * @param page
+     * @param contentStream
+     * @param y the y-coordinate of the first row
+     * @param margin the padding on left and right of table
+     * @param content a 2d array containing the table data
+     * @throws IOException
+     */
+    public static void drawTable(PDPage page, PDPageContentStream contentStream,
+                                 float y, float margin,
+                                 String[][] content) throws IOException {
+        final int rows = content.length;
+        final int cols = content[0].length;
+        final float rowHeight = 20f;
+        final float tableWidth = page.getMediaBox().getWidth()-(2*margin);
+        final float tableHeight = rowHeight * rows;
+        final float colWidth = tableWidth/(float)cols;
+        final float cellMargin=5f;
+
+        //draw the rows
+        float nexty = y ;
+        for (int i = 0; i <= rows; i++) {
+            contentStream.drawLine(margin,nexty,margin+tableWidth,nexty);
+            nexty-= rowHeight;
+        }
+
+        //draw the columns
+        float nextx = margin;
+        for (int i = 0; i <= cols; i++) {
+            contentStream.drawLine(nextx,y,nextx,y-tableHeight);
+            nextx += colWidth;
+        }
+
+        //now add the text
+        contentStream.setFont(PDType1Font.HELVETICA_BOLD,12);
+
+        float textx = margin+cellMargin;
+        float texty = y-15;
+        for(int i = 0; i < content.length; i++){
+            for(int j = 0 ; j < content[i].length; j++){
+                String text = content[i][j];
+                contentStream.beginText();
+                contentStream.moveTextPositionByAmount(textx,texty);
+                contentStream.drawString(text);
+                contentStream.endText();
+                textx += colWidth;
+            }
+            texty-=rowHeight;
+            textx = margin+cellMargin;
+        }
     }
 }
