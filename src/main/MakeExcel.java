@@ -14,6 +14,11 @@ public class MakeExcel {
 
     static public void main(String[] args) {
 
+        doCreate();
+
+    }
+
+    static private void doCreate() {
         // Create a new excel file which name is "kim's sheet"
         Workbook wb = new XSSFWorkbook();
         CreationHelper createHelper = wb.getCreationHelper();
