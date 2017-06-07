@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  * Created by bumskim on 2017. 6. 7..
  */
-public class PracticeForExcel {
+public class MakeExcel {
 
     static public void main(String[] args) {
 
