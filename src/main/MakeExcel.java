@@ -55,5 +55,10 @@ public class MakeExcel {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        try {
+			wb.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
 }
